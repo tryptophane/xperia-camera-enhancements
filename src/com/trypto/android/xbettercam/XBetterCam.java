@@ -61,7 +61,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 							XposedBridge.log("Xglauncher: Hooking Method launchAlbum in MainUi of AR Effect addon...");
 
-							Uri uri = (Uri) param.args[0];
+							final Uri uri = (Uri) param.args[0];
 							Activity activity = (Activity) callMethod(param.thisObject, "getActivity");
 
 							if (needsSonyGallery(activity, uri, "", false)) {
@@ -78,14 +78,14 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 							XposedBridge.log(
 									"Xglauncher: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
-							Intent intent = (Intent) param.args[0];
+							final Intent intent = (Intent) param.args[0];
 
 							if (intent.getAction().equals("android.intent.action.VIEW")
 									|| !intent.getPackage().equals("com.sonyericsson.album")) {
 								return;
 							}
 
-							Uri uri = intent.getData();
+							final Uri uri = intent.getData();
 							if (needsSonyGallery((Activity) param.thisObject, uri, "", false)) {
 								return;
 							}
@@ -130,7 +130,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 	public String getRealPathFromURI(Context context, Uri contentUri) {
 		Cursor cursor = null;
 		try {
-			String[] proj = { MediaStore.Images.Media.DATA };
+			final String[] proj = { MediaStore.Images.Media.DATA };
 			cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
 			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 			cursor.moveToFirst();
