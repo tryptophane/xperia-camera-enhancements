@@ -32,3 +32,13 @@ This hack prevents a very annoying behavior of the stock camera app. Whenever yo
 
 This module prevents this behavior, the Geo-Tags setting will stay set to ON until you deliberately disable it.
 
+<b>Credits:</b>
+
+Many thanks to:
+
+<ul>
+<li><b>rovo89</b> for the magnific Xposed framework.
+<li><b>venkat kamesh</b> for a tutorial on how to hack the camera UI on a smali basis, which led me to make my first steps in reverse engineering of android APKs.
+<li><b>MohammadAG</b> I looked into the code of his Xposed mod "Xposed-Z1-Camera-Tweaks" to learn about programming Xposed modules.
+</ul>
+
