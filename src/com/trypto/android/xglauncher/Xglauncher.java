@@ -1,14 +1,6 @@
 package com.trypto.android.xglauncher;
 
-import static com.trypto.android.xglauncher.Constants.APP_PACKAGE_ART_CAMERA;
-import static com.trypto.android.xglauncher.Constants.APP_PACKAGE_AR_EFFECT;
-import static com.trypto.android.xglauncher.Constants.APP_PACKAGE_BACKGROUND_DEFOCUS;
-import static com.trypto.android.xglauncher.Constants.APP_PACKAGE_CAMERA;
-import static com.trypto.android.xglauncher.Constants.APP_PACKAGE_CAMERA_3D;
-import static com.trypto.android.xglauncher.Constants.PATH_ALBUM_LAUNCHER;
-import static com.trypto.android.xglauncher.Constants.PATH_ANDROID_APP_ACTIVITY;
-import static com.trypto.android.xglauncher.Constants.PATH_AR_EFFECT_MAIN_UI;
-import static com.trypto.android.xglauncher.Constants.TIMESHIFT_IDENT;
+import static com.trypto.android.xglauncher.Constants.*;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -32,7 +24,8 @@ public class Xglauncher implements IXposedHookLoadPackage {
 
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
-				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)) {
+				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
+				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
 			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
@@ -54,6 +47,13 @@ public class Xglauncher implements IXposedHookLoadPackage {
 							param.setResult(null);
 						}
 					});
+			
+			findAndHookMethod(PATH_LOCATION_SETTINGS_READER, lpparam.classLoader, "getIsGpsLocationAllowed", new XC_MethodHook() {
+						@Override
+						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							param.setResult(true);
+						}
+			});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_AR_EFFECT)) {
 			findAndHookMethod(PATH_AR_EFFECT_MAIN_UI, lpparam.classLoader, "launchAlbum", Uri.class,
 					new XC_MethodHook() {
