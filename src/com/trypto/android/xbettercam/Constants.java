@@ -1,4 +1,4 @@
-package com.trypto.android.xglauncher;
+package com.trypto.android.xbettercam;
 
 public class Constants {
 	public static final String APP_PACKAGE_CAMERA = "com.sonyericsson.android.camera";

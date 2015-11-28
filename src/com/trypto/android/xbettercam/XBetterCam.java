@@ -1,6 +1,6 @@
-package com.trypto.android.xglauncher;
+package com.trypto.android.xbettercam;
 
-import static com.trypto.android.xglauncher.Constants.*;
+import static com.trypto.android.xbettercam.Constants.*;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -20,7 +20,7 @@ import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-public class Xglauncher implements IXposedHookLoadPackage {
+public class XBetterCam implements IXposedHookLoadPackage {
 
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
