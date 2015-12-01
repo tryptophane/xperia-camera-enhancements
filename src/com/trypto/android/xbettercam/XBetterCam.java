@@ -1,6 +1,17 @@
 package com.trypto.android.xbettercam;
 
-import static com.trypto.android.xbettercam.Constants.*;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_ART_CAMERA;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_AR_EFFECT;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_BACKGROUND_DEFOCUS;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_CAMERA;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_CAMERA_3D;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_SOUND_PHOTO;
+import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_TIMESHIFT;
+import static com.trypto.android.xbettercam.Constants.PATH_ALBUM_LAUNCHER;
+import static com.trypto.android.xbettercam.Constants.PATH_ANDROID_APP_ACTIVITY;
+import static com.trypto.android.xbettercam.Constants.PATH_AR_EFFECT_MAIN_UI;
+import static com.trypto.android.xbettercam.Constants.PATH_LOCATION_SETTINGS_READER;
+import static com.trypto.android.xbettercam.Constants.TIMESHIFT_IDENT;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -17,22 +28,32 @@ import android.provider.MediaStore;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class XBetterCam implements IXposedHookLoadPackage {
 
+	private static final String PACKAGE_NAME = XBetterCam.class.getPackage().getName();
+	
+	final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
+    
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
+
+    	if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
 				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
 				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
+
+			
 			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-
+							if (!prefs.getBoolean("launcher_preference", false))
+								return;
+							
 							final Activity activity = (Activity) param.args[0];
 							final Uri uri = (Uri) param.args[1];
 							final String s = (String) param.args[2];
@@ -51,14 +72,20 @@ public class XBetterCam implements IXposedHookLoadPackage {
 			findAndHookMethod(PATH_LOCATION_SETTINGS_READER, lpparam.classLoader, "getIsGpsLocationAllowed", new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							if (!prefs.getBoolean("geotag_preference", false))
+								return;
 							param.setResult(true);
 						}
 			});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_AR_EFFECT)) {
-			findAndHookMethod(PATH_AR_EFFECT_MAIN_UI, lpparam.classLoader, "launchAlbum", Uri.class,
+
+	    	findAndHookMethod(PATH_AR_EFFECT_MAIN_UI, lpparam.classLoader, "launchAlbum", Uri.class,
 					new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							if (!prefs.getBoolean("launcher_preference", false))
+								return;
+							
 							XposedBridge.log("Xglauncher: Hooking Method launchAlbum in MainUi of AR Effect addon...");
 
 							final Uri uri = (Uri) param.args[0];
@@ -72,10 +99,14 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_BACKGROUND_DEFOCUS)) {
+
 			findAndHookMethod(PATH_ANDROID_APP_ACTIVITY, lpparam.classLoader, "startActivityForResult", Intent.class,
 					int.class, new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							if (!prefs.getBoolean("launcher_preference", false))
+								return;
+							
 							XposedBridge.log(
 									"Xglauncher: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
 							final Intent intent = (Intent) param.args[0];
@@ -166,5 +197,4 @@ public class XBetterCam implements IXposedHookLoadPackage {
 			return mText;
 		}
 	}
-
 }
