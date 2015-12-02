@@ -6,17 +6,17 @@
             android:title="@string/inline_preferences">
 
         <CheckBoxPreference
-                android:defaultValue="true" />
                 android:key="launcher_preference"
                 android:title="@string/title_launcher_preference"
                 android:summary="@string/summary_launcher_preference" />
+                android:defaultValue="true" />
                 
 
         <CheckBoxPreference
-				android:defaultValue="true" />
                 android:key="geotag_preference"
                 android:title="@string/title_geotag_preference"
                 android:summary="@string/summary_geotag_preference" />
+				android:defaultValue="true" />
 
     </PreferenceCategory>
 
