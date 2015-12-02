@@ -47,13 +47,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
-			findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new XC_MethodHook() {
-				@Override
-				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-					XposedBridge.log("Xglauncher: Entering Activity.performResume()...");
-					prefs.reload();
-				}
-			});
+			hookOnResume(lpparam);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
@@ -88,6 +82,8 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_AR_EFFECT)) {
 
+			hookOnResume(lpparam);
+
 			findAndHookMethod(PATH_AR_EFFECT_MAIN_UI, lpparam.classLoader, "launchAlbum", Uri.class,
 					new XC_MethodHook() {
 						@Override
@@ -108,6 +104,8 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_BACKGROUND_DEFOCUS)) {
+
+			hookOnResume(lpparam);
 
 			findAndHookMethod(PATH_ANDROID_APP_ACTIVITY, lpparam.classLoader, "startActivityForResult", Intent.class,
 					int.class, new XC_MethodHook() {
@@ -135,6 +133,16 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					});
 		}
+	}
+
+	private void hookOnResume(final LoadPackageParam lpparam) {
+		findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				XposedBridge.log("Xglauncher: Entering Activity.performResume()...");
+				prefs.reload();
+			}
+		});
 	}
 
 	private void startUserGallery(Uri uri, MethodHookParam param, Activity activity) {
