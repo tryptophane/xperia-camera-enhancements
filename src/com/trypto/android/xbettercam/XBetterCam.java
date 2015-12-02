@@ -40,13 +40,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 
-		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
-				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)
-				|| lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
-				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
-
-			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
-
+		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA)) {
 			findAndHookMethod("com.sonyericsson.android.camera.CameraActivity", lpparam.classLoader, "onResume", new XC_MethodHook() {
 				@Override
 				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -54,6 +48,14 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					prefs.reload();
 				}
 			});
+		}
+
+		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
+				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)
+				|| lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
+				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
+
+			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
