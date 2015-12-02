@@ -51,8 +51,6 @@ public class XBetterCam implements IXposedHookLoadPackage {
 				@Override
 				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 					XposedBridge.log("Xglauncher: Entering CameraActivity.onResume()...");
-//					PreferenceManager.setDefaultValues((Context) AndroidAppHelper.currentApplication(),
-//							R.xml.preferences, false);
 					prefs.reload();
 				}
 			});
@@ -61,7 +59,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					String.class, int.class, boolean.class, new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							if (!prefs.getBoolean("launcher_preference", false))
+							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
 							final Activity activity = (Activity) param.args[0];
@@ -83,7 +81,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							if (!prefs.getBoolean("geotag_preference", false))
+							if (!prefs.getBoolean("geotag_preference", true))
 								return;
 							param.setResult(true);
 						}
@@ -94,7 +92,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							if (!prefs.getBoolean("launcher_preference", false))
+							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
 							XposedBridge.log("Xglauncher: Hooking Method launchAlbum in MainUi of AR Effect addon...");
@@ -115,7 +113,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					int.class, new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							if (!prefs.getBoolean("launcher_preference", false))
+							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
 							XposedBridge.log(

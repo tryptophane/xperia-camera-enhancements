@@ -8,14 +8,14 @@
         <CheckBoxPreference
                 android:key="launcher_preference"
                 android:title="@string/title_launcher_preference"
-                android:summary="@string/summary_launcher_preference" />
+                android:summary="@string/summary_launcher_preference"
                 android:defaultValue="true" />
-                
+
 
         <CheckBoxPreference
                 android:key="geotag_preference"
                 android:title="@string/title_geotag_preference"
-                android:summary="@string/summary_geotag_preference" />
+                android:summary="@string/summary_geotag_preference"
 				android:defaultValue="true" />
 
     </PreferenceCategory>

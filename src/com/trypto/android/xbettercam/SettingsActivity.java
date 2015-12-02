@@ -12,7 +12,6 @@ public class SettingsActivity extends Activity {
 		// Display the fragment as the main content.
 		getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
 
-//		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	}
 
 	public static class SettingsFragment extends PreferenceFragment {
