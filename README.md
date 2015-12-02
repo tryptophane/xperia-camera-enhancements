@@ -1,9 +1,7 @@
 # xperia-camera-enhancements
 <b>Xposed module with various mods for the stock camera app of Sony Xperia devices.</b>
 
-<i><b>Note 1:</b> This module has alpha-status. For now, it doesn't allow any settings. I will add a settings page in an upcoming release to switch on or off the two hacks implemented till now in this module.</i> 
-
-<i><b>Note 2:</b> Tested on my Z1 Compact. Chances are good that it works well with other Xperia devices, as far as they have the same camera app. I would appreciate your feedback :-)</i>
+<i><b>Note:</b> Tested on my Z1 Compact. Chances are good that it works well with other Xperia devices, as far as they have the same camera app. I would appreciate your feedback :-)</i>
 
 <b>MOD #1: Let the user choose which gallery app gets opened by the camera</b>
 
