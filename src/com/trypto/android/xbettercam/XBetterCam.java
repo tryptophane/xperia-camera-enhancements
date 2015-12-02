@@ -65,7 +65,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 								return;
 							}
 
-							XposedBridge.log("Xglauncher: Starting user gallery...");
+							XposedBridge.log("XBetterCam: Starting user gallery...");
 							callStaticMethod(AlbumLauncher, "launchPlayer", activity, uri, s);
 							param.setResult(null);
 						}
@@ -91,7 +91,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
-							XposedBridge.log("Xglauncher: Hooking Method launchAlbum in MainUi of AR Effect addon...");
+							XposedBridge.log("XBetterCam: Hooking Method launchAlbum in MainUi of AR Effect addon...");
 
 							final Uri uri = (Uri) param.args[0];
 							Activity activity = (Activity) callMethod(param.thisObject, "getActivity");
@@ -115,7 +115,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 								return;
 
 							XposedBridge.log(
-									"Xglauncher: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
+									"XBetterCam: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
 							final Intent intent = (Intent) param.args[0];
 
 							if (intent.getAction().equals("android.intent.action.VIEW")
@@ -139,7 +139,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				XposedBridge.log("Xglauncher: Entering Activity.performResume()...");
+				XposedBridge.log("XBetterCam: Entering Activity.performResume()...");
 				prefs.reload();
 			}
 		});
@@ -151,7 +151,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		intent.putExtra("android.intent.extra.finishOnCompletion", true);
 		intent.setDataAndType(uri, MimeType.PHOTO.getText());
 		if (intent.resolveActivity(activity.getPackageManager()) != null) {
-			XposedBridge.log("Xglauncher: Starting user gallery...");
+			XposedBridge.log("XBetterCam: Starting user gallery...");
 			activity.startActivity(intent);
 			param.setResult(null);
 		}
@@ -159,7 +159,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	private boolean needsSonyGallery(final Activity activity, final Uri uri, final String s, final boolean b) {
 		final String realPath = getRealPathFromURI(activity, uri);
-		XposedBridge.log("Xglauncher: Path to medium: " + realPath);
+		XposedBridge.log("XBetterCam: Path to medium: " + realPath);
 
 		boolean mpoPresent = false;
 
@@ -169,7 +169,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		}
 
 		if (MimeType.fromText(s) == MimeType.MPO || b || realPath.contains(TIMESHIFT_IDENT) || mpoPresent) {
-			XposedBridge.log("Xglauncher: Fallback to original method");
+			XposedBridge.log("XBetterCam: Fallback to original method");
 			return true;
 		}
 		return false;
