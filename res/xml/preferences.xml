@@ -2,8 +2,21 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<PreferenceCategory
+            android:title="@string/category_support">
+
+		<Preference
+				android:key="support_preference"
+				android:title="@string/support_preference"
+				android:summary="@string/support_text">
+    			<intent android:action="android.intent.action.VIEW"
+            	android:data="http://forum.xda-developers.com/xposed/modules/mod-xperia-camera-enhancements-t3260643" />
+		</Preference>
+
+	</PreferenceCategory>
+
     <PreferenceCategory
-            android:title="@string/inline_preferences">
+            android:title="@string/category_preferences">
 
         <CheckBoxPreference
                 android:key="launcher_preference"
@@ -20,4 +33,4 @@
 
     </PreferenceCategory>
 
-</PreferenceScreen>
+ </PreferenceScreen>
