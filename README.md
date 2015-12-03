@@ -32,7 +32,7 @@ This mod prevents a very annoying behavior of the stock camera app. Whenever you
 
 This mod prevents this behavior, the Geo-Tags setting will stay set to ON until you deliberately disable it.
 
-<b>MOD #3:Force photo mode on start</b>
+<b>MOD #3: Force photo mode on start</b>
 
 In manual mode, the camera will always start in photo mode, even if the last mode used was video.
 
