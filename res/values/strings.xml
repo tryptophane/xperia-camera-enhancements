@@ -1,12 +1,19 @@
 <resources>
 
-    <string name="app_name">Xperia Camera Enhancements</string>
     <string name="category_preferences">Preferences</string>
+ 
     <string name="title_launcher_preference">Unbind default gallery app</string>
     <string name="summary_launcher_preference">Choose which gallery app to use when tapping on the preview thumbnail</string>
+ 
     <string name="title_geotag_preference">Keep Geo-Tag setting</string>
     <string name="summary_geotag_preference">Ensures that the Geo-Tags option does not get disabled automatically</string>
+ 
+    <string name="title_capture_mode_preference">Force photo mode on start</string>
+    <string name="summary_capture_mode_preference">Always start camera in photo mode even if the last mode used was video.</string>
+ 
     <string name="category_support">Support</string>
+ 
+    <string name="app_name">Xperia Camera Enhancements</string>
     <string name="support_preference">Xperia Camera Enhancements</string>
     <string name="support_text">Copyright © 2015 – Pascal Pollet\nTap here to open XDA support thread</string>
 </resources>

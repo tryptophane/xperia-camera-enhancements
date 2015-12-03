@@ -1,17 +1,6 @@
 package com.trypto.android.xbettercam;
 
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_ART_CAMERA;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_AR_EFFECT;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_BACKGROUND_DEFOCUS;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_CAMERA;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_CAMERA_3D;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_SOUND_PHOTO;
-import static com.trypto.android.xbettercam.Constants.APP_PACKAGE_TIMESHIFT;
-import static com.trypto.android.xbettercam.Constants.PATH_ALBUM_LAUNCHER;
-import static com.trypto.android.xbettercam.Constants.PATH_ANDROID_APP_ACTIVITY;
-import static com.trypto.android.xbettercam.Constants.PATH_AR_EFFECT_MAIN_UI;
-import static com.trypto.android.xbettercam.Constants.PATH_LOCATION_SETTINGS_READER;
-import static com.trypto.android.xbettercam.Constants.TIMESHIFT_IDENT;
+import static com.trypto.android.xbettercam.Constants.*;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -38,6 +27,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
 
+	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 
 		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
@@ -47,7 +37,16 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			final Class<? extends Enum> CapturingMode = (Class<? extends Enum>) findClass(PATH_CAPTURING_MODE,
+					lpparam.classLoader);
+
+			@SuppressWarnings("unchecked")
+			final Enum<?> enumPhoto = Enum.valueOf(CapturingMode, "NORMAL");
+
 			hookOnResume(lpparam);
+
+			modLastCapturingMode(lpparam, CapturingMode, enumPhoto);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
@@ -133,6 +132,42 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					});
 		}
+	}
+
+	private void modLastCapturingMode(final LoadPackageParam lpparam, final Class<? extends Enum> CapturingMode,
+			final Enum<?> enumPhoto) {
+		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastCapturingMode", CapturingMode,
+				new XC_MethodHook() {
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						if (!prefs.getBoolean("capture_mode_preference", false))
+							return;
+						XposedBridge.log("XBetterCam: hooking getLastCapturingMode()");
+						param.setResult(enumPhoto);
+					}
+				});
+
+		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastPreviousCapturingMode", CapturingMode,
+				new XC_MethodHook() {
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						if (!prefs.getBoolean("capture_mode_preference", false))
+							return;
+						XposedBridge.log("XBetterCam: hooking getLastPreviousCapturingMode()");
+						param.setResult(enumPhoto);
+					}
+				});
+
+		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastPreviousManualMode", CapturingMode,
+				new XC_MethodHook() {
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						if (!prefs.getBoolean("capture_mode_preference", false))
+							return;
+						XposedBridge.log("XBetterCam: hooking getLastPreviousManualMode()");
+						param.setResult(enumPhoto);
+					}
+				});
 	}
 
 	private void hookOnResume(final LoadPackageParam lpparam) {
