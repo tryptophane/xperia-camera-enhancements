@@ -140,6 +140,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 				new XC_MethodHook() {
 					@Override
 					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						prefs.reload();
 						if (!prefs.getBoolean("capture_mode_preference", false))
 							return;
 						XposedBridge.log("XBetterCam: hooking getLastCapturingMode()");
