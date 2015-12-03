@@ -30,13 +30,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 
-		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
-				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)
-				|| lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
-				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
-
-			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
-
+		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA)) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			final Class<? extends Enum> CapturingMode = (Class<? extends Enum>) findClass(PATH_CAPTURING_MODE,
 					lpparam.classLoader);
@@ -44,9 +38,17 @@ public class XBetterCam implements IXposedHookLoadPackage {
 			@SuppressWarnings("unchecked")
 			final Enum<?> enumPhoto = Enum.valueOf(CapturingMode, "NORMAL");
 
-			hookOnResume(lpparam);
-
 			modLastCapturingMode(lpparam, CapturingMode, enumPhoto);
+		}
+
+		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
+				|| lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)
+				|| lpparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
+				|| lpparam.packageName.equals(APP_PACKAGE_TIMESHIFT)) {
+
+			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
+
+			hookOnResume(lpparam);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
