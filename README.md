@@ -32,7 +32,10 @@ This mod prevents a very annoying behavior of the stock camera app. Whenever you
 
 This mod prevents this behavior, the Geo-Tags setting will stay set to ON until you deliberately disable it.
 
-<b>MOD #3: Force photo mode on start</b>
+<b>MOD #3: Enable location setting in system on start</b>
+This will enable the location setting in the android system on camera start/resume. It will disable it again on close/hide, but only if it has been enabled by this mod, not if location was already enabled before starting the camera.
+
+<b>MOD #4: Force photo mode on start</b>
 
 In manual mode, the camera will always start in photo mode, even if the last mode used was video.
 

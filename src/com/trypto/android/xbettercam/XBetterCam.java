@@ -8,6 +8,7 @@ import static de.robv.android.xposed.XposedHelpers.findClass;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public class XBetterCam implements IXposedHookLoadPackage {
 
 	private static final String PACKAGE_NAME = XBetterCam.class.getPackage().getName();
-
-	final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
+	private final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
+	private final SystemLocationHandler locationHandler = new SystemLocationHandler();
+	private boolean gpsWasOn = false;
 
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
@@ -48,7 +50,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 			final Class<?> AlbumLauncher = findClass(PATH_ALBUM_LAUNCHER, lpparam.classLoader);
 
-			hookOnResume(lpparam);
+			hookOnResumeAndExitMethods(lpparam);
 
 			findAndHookMethod(PATH_ALBUM_LAUNCHER, lpparam.classLoader, "launchAlbum", Activity.class, Uri.class,
 					String.class, int.class, boolean.class, new XC_MethodHook() {
@@ -83,10 +85,11 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_AR_EFFECT)) {
 
-			hookOnResume(lpparam);
+			hookOnResumeAndExitMethods(lpparam);
 
 			findAndHookMethod(PATH_AR_EFFECT_MAIN_UI, lpparam.classLoader, "launchAlbum", Uri.class,
 					new XC_MethodHook() {
+
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 							if (!prefs.getBoolean("launcher_preference", true))
@@ -106,7 +109,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					});
 		} else if (lpparam.packageName.equals(APP_PACKAGE_BACKGROUND_DEFOCUS)) {
 
-			hookOnResume(lpparam);
+			hookOnResumeAndExitMethods(lpparam);
 
 			findAndHookMethod(PATH_ANDROID_APP_ACTIVITY, lpparam.classLoader, "startActivityForResult", Intent.class,
 					int.class, new XC_MethodHook() {
@@ -134,8 +137,10 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					});
 		}
+
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void modLastCapturingMode(final LoadPackageParam lpparam, final Class<? extends Enum> CapturingMode,
 			final Enum<?> enumPhoto) {
 		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastCapturingMode", CapturingMode,
@@ -173,12 +178,43 @@ public class XBetterCam implements IXposedHookLoadPackage {
 				});
 	}
 
+	private void hookOnResumeAndExitMethods(final LoadPackageParam lpparam) {
+		hookOnResume(lpparam);
+		hookOnExitMethod(lpparam, "onPause");
+		hookOnExitMethod(lpparam, "onStop");
+		hookOnExitMethod(lpparam, "onDestroy");
+	}
+
 	private void hookOnResume(final LoadPackageParam lpparam) {
 		findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				XposedBridge.log("XBetterCam: Entering Activity.performResume()...");
 				prefs.reload();
+				if (prefs.getBoolean("system_location_preference", false)) {
+					final Activity activity = (Activity) param.thisObject;
+					gpsWasOn = locationHandler.isGpsTurnedOn(activity);
+					if (!gpsWasOn) {
+						if (!locationHandler.turnGpsOn(activity))
+							XposedBridge.log("XBetterCam: turnGpsOn() returned false");
+					}
+				}
+			}
+		});
+	}
+
+	private void hookOnExitMethod(final LoadPackageParam lpparam, final String methodName) {
+		findAndHookMethod("android.app.Activity", lpparam.classLoader, methodName, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				if (!prefs.getBoolean("system_location_preference", false))
+					return;
+
+				XposedBridge.log("XBetterCam: Entering Activity." + methodName + "()...");
+				if (!gpsWasOn) {
+					final Activity activity = (Activity) param.thisObject;
+					locationHandler.turnGpsOff(activity);
+				}
 			}
 		});
 	}
@@ -195,6 +231,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		}
 	}
 
+	@SuppressLint("DefaultLocale")
 	private boolean needsSonyGallery(final Activity activity, final Uri uri, final String s, final boolean b) {
 		final String realPath = getRealPathFromURI(activity, uri);
 		XposedBridge.log("XBetterCam: Path to medium: " + realPath);

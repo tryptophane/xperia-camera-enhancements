@@ -31,6 +31,12 @@
 				android:defaultValue="true" />
 
         <CheckBoxPreference
+                android:key="system_location_preference"
+                android:title="@string/title_system_location_preference"
+                android:summary="@string/summary_system_location_preference"
+				android:defaultValue="false" />
+
+        <CheckBoxPreference
                 android:key="capture_mode_preference"
                 android:title="@string/title_capture_mode_preference"
                 android:summary="@string/summary_capture_mode_preference"

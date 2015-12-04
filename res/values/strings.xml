@@ -8,6 +8,9 @@
     <string name="title_geotag_preference">Keep Geo-Tag setting</string>
     <string name="summary_geotag_preference">Ensures that the Geo-Tags option does not get disabled automatically</string>
  
+    <string name="title_system_location_preference">Enable location in system on start</string>
+    <string name="summary_system_location_preference">Enable location setting in system on start and disable it again on exit (if it was not enabled before start)</string>
+ 
     <string name="title_capture_mode_preference">Force photo mode on start</string>
     <string name="summary_capture_mode_preference">Always start camera in photo mode even if the last mode used was video.</string>
  
