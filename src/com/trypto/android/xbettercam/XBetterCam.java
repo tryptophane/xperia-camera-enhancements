@@ -159,33 +159,6 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						}
 					}
 				});
-
-		// findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader,
-		// "getLastPreviousCapturingMode", CapturingMode,
-		// new XC_MethodHook() {
-		// @Override
-		// protected void beforeHookedMethod(MethodHookParam param) throws
-		// Throwable {
-		// if (!prefs.getBoolean("capture_mode_preference", false))
-		// return;
-		// XposedBridge.log("XBetterCam: hooking
-		// getLastPreviousCapturingMode()");
-		// param.setResult(enumPhoto);
-		// }
-		// });
-		//
-		// findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader,
-		// "getLastPreviousManualMode", CapturingMode,
-		// new XC_MethodHook() {
-		// @Override
-		// protected void beforeHookedMethod(MethodHookParam param) throws
-		// Throwable {
-		// if (!prefs.getBoolean("capture_mode_preference", false))
-		// return;
-		// XposedBridge.log("XBetterCam: hooking getLastPreviousManualMode()");
-		// param.setResult(enumPhoto);
-		// }
-		// });
 	}
 
 	private void hookOnResumeAndExitMethods(final LoadPackageParam lpparam) {
