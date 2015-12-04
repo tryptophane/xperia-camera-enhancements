@@ -40,7 +40,10 @@ public class XBetterCam implements IXposedHookLoadPackage {
 			@SuppressWarnings("unchecked")
 			final Enum<?> enumPhoto = Enum.valueOf(CapturingMode, "NORMAL");
 
-			modLastCapturingMode(lpparam, CapturingMode, enumPhoto);
+			@SuppressWarnings("unchecked")
+			final Enum<?> enumVideo = Enum.valueOf(CapturingMode, "VIDEO");
+
+			modLastCapturingMode(lpparam, CapturingMode, enumPhoto, enumVideo);
 		}
 
 		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
@@ -142,40 +145,47 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	@SuppressWarnings("rawtypes")
 	private void modLastCapturingMode(final LoadPackageParam lpparam, final Class<? extends Enum> CapturingMode,
-			final Enum<?> enumPhoto) {
+			final Enum<?> enumPhoto, final Enum<?> enumVideo) {
 		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastCapturingMode", CapturingMode,
 				new XC_MethodHook() {
 					@Override
-					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 						prefs.reload();
 						if (!prefs.getBoolean("capture_mode_preference", false))
 							return;
 						XposedBridge.log("XBetterCam: hooking getLastCapturingMode()");
-						param.setResult(enumPhoto);
+						if (param.getResult().equals(enumVideo)) {
+							param.setResult(enumPhoto);
+						}
 					}
 				});
 
-		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastPreviousCapturingMode", CapturingMode,
-				new XC_MethodHook() {
-					@Override
-					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-						if (!prefs.getBoolean("capture_mode_preference", false))
-							return;
-						XposedBridge.log("XBetterCam: hooking getLastPreviousCapturingMode()");
-						param.setResult(enumPhoto);
-					}
-				});
-
-		findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader, "getLastPreviousManualMode", CapturingMode,
-				new XC_MethodHook() {
-					@Override
-					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-						if (!prefs.getBoolean("capture_mode_preference", false))
-							return;
-						XposedBridge.log("XBetterCam: hooking getLastPreviousManualMode()");
-						param.setResult(enumPhoto);
-					}
-				});
+		// findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader,
+		// "getLastPreviousCapturingMode", CapturingMode,
+		// new XC_MethodHook() {
+		// @Override
+		// protected void beforeHookedMethod(MethodHookParam param) throws
+		// Throwable {
+		// if (!prefs.getBoolean("capture_mode_preference", false))
+		// return;
+		// XposedBridge.log("XBetterCam: hooking
+		// getLastPreviousCapturingMode()");
+		// param.setResult(enumPhoto);
+		// }
+		// });
+		//
+		// findAndHookMethod(PATH_CAMERA_ACTIVITY, lpparam.classLoader,
+		// "getLastPreviousManualMode", CapturingMode,
+		// new XC_MethodHook() {
+		// @Override
+		// protected void beforeHookedMethod(MethodHookParam param) throws
+		// Throwable {
+		// if (!prefs.getBoolean("capture_mode_preference", false))
+		// return;
+		// XposedBridge.log("XBetterCam: hooking getLastPreviousManualMode()");
+		// param.setResult(enumPhoto);
+		// }
+		// });
 	}
 
 	private void hookOnResumeAndExitMethods(final LoadPackageParam lpparam) {
