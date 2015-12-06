@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string-array name="locationArray">
+        <item>GPS</item>
+        <item>Networks</item>
+        <item>GPS + Networks</item>
+    </string-array>
+
+    <string-array name="locationValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+</resources>

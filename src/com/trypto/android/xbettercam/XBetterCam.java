@@ -26,8 +26,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	private static final String PACKAGE_NAME = XBetterCam.class.getPackage().getName();
 	private final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
-	private final SystemLocationHandler locationHandler = new SystemLocationHandler();
-	private boolean gpsWasOn = false;
+	private final SystemLocationHandler locationHandler = new SystemLocationHandler(prefs);
 
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
@@ -176,11 +175,8 @@ public class XBetterCam implements IXposedHookLoadPackage {
 				prefs.reload();
 				if (prefs.getBoolean("system_location_preference", false)) {
 					final Activity activity = (Activity) param.thisObject;
-					gpsWasOn = locationHandler.isGpsTurnedOn(activity);
-					if (!gpsWasOn) {
-						if (!locationHandler.turnGpsOn(activity))
-							XposedBridge.log("XBetterCam: turnGpsOn() returned false");
-					}
+					if (!locationHandler.applyLocationSettings(activity))
+						XposedBridge.log("XBetterCam: turnGpsOn() returned false");
 				}
 			}
 		});
@@ -194,10 +190,8 @@ public class XBetterCam implements IXposedHookLoadPackage {
 					return;
 
 				XposedBridge.log("XBetterCam: Entering Activity." + methodName + "()...");
-				if (!gpsWasOn) {
-					final Activity activity = (Activity) param.thisObject;
-					locationHandler.turnGpsOff(activity);
-				}
+				final Activity activity = (Activity) param.thisObject;
+				locationHandler.restoreLocationSettings(activity);
 			}
 		});
 	}

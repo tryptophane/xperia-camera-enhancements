@@ -35,7 +35,20 @@
                 android:title="@string/title_system_location_preference"
                 android:summary="@string/summary_system_location_preference"
 				android:defaultValue="false" />
+				
+		<ListPreference
+            android:key="location_mode_preference"
+            android:title="@string/title_location_mode_preference"
+            android:defaultValue="0"
+            android:entries="@array/locationArray"
+            android:entryValues="@array/locationValues" />
 
+        <CheckBoxPreference
+                android:key="disable_system_location_preference"
+                android:title="@string/title_disable_system_location_preference"
+                android:summary="@string/summary_disable_system_location_preference"
+				android:defaultValue="false" />
+				
         <CheckBoxPreference
                 android:key="capture_mode_preference"
                 android:title="@string/title_capture_mode_preference"
