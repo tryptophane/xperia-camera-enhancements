@@ -41,7 +41,7 @@ public class SystemLocationHandler {
 			} else if (locationModePref.equals("1")) {
 				newLocationMode = beforeEnable == LOCATION_MODE_SENSORS_ONLY
 						|| beforeEnable == LOCATION_MODE_HIGH_ACCURACY ? LOCATION_MODE_HIGH_ACCURACY
-								: LOCATION_MODE_SENSORS_ONLY;
+								: LOCATION_MODE_BATTERY_SAVING;
 			} else if (locationModePref.equals("2")) {
 				newLocationMode = LOCATION_MODE_HIGH_ACCURACY;
 			} else {
