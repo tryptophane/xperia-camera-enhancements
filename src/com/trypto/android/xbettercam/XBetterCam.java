@@ -207,8 +207,6 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 	private void hookOnResumeAndExitMethods(final LoadPackageParam lpparam) {
 		hookOnResume(lpparam);
 		hookOnExitMethod(lpparam, "onPause");
-		hookOnExitMethod(lpparam, "onStop");
-		hookOnExitMethod(lpparam, "onDestroy");
 	}
 
 	private void hookOnResume(final LoadPackageParam lpparam) {
