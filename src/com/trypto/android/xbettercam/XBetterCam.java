@@ -56,9 +56,9 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 					@Override
 					public Drawable newDrawable(XResources res, int id) throws Throwable {
 						if (!mGpsAcquired) {
-							return modRes.getDrawable(R.drawable.cam_acquired_gps_icn_blue);
+							return modRes.getDrawable(R.drawable.cam_acquired_gps_icn_blue, null);
 						}
-						return modRes.getDrawable(R.drawable.cam_acquired_gps_icn);
+						return modRes.getDrawable(R.drawable.cam_acquired_gps_icn, null);
 					}
 				});
 	}
