@@ -1,6 +1,8 @@
 package com.trypto.android.xbettercam;
 
 public class Constants {
+	public static final boolean DEBUG = true;
+
 	public static final String APP_PACKAGE_CAMERA = "com.sonyericsson.android.camera";
 	public static final String APP_PACKAGE_AR_EFFECT="com.sonymobile.androidapp.cameraaddon.areffect";
 	public static final String APP_PACKAGE_BACKGROUND_DEFOCUS="com.sonymobile.backgrounddefocus";

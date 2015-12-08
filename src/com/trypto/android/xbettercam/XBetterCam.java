@@ -7,26 +7,61 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 
 import java.io.File;
+import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.XModuleResources;
+import android.content.res.XResources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-public class XBetterCam implements IXposedHookLoadPackage {
+public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
 
 	private static final String PACKAGE_NAME = XBetterCam.class.getPackage().getName();
 	private final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
 	private final SystemLocationHandler locationHandler = new SystemLocationHandler(prefs);
+	private Activity mActivity;
+	private static String MODULE_PATH = null;
+	private boolean mGpsAcquired = false;
+
+	@Override
+	public void initZygote(StartupParam startupParam) throws Throwable {
+		MODULE_PATH = startupParam.modulePath;
+	}
+
+	@Override
+	public void handleInitPackageResources(final InitPackageResourcesParam resparam) throws Throwable {
+		if (!resparam.packageName.equals(APP_PACKAGE_CAMERA)) {
+			return;
+		}
+		final XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
+
+		resparam.res.setReplacement(resparam.packageName, "drawable", "cam_acquired_gps_icn",
+				new XResources.DrawableLoader() {
+					@Override
+					public Drawable newDrawable(XResources res, int id) throws Throwable {
+						if (!mGpsAcquired) {
+							return modRes.getDrawable(R.drawable.cam_acquired_gps_icn_blue);
+						}
+						return modRes.getDrawable(R.drawable.cam_acquired_gps_icn);
+					}
+				});
+	}
 
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
@@ -70,7 +105,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 								return;
 							}
 
-							XposedBridge.log("XBetterCam: Starting user gallery...");
+							Logger.debug("XBetterCam: Starting user gallery...");
 							callStaticMethod(AlbumLauncher, "launchPlayer", activity, uri, s);
 							param.setResult(null);
 						}
@@ -85,6 +120,30 @@ public class XBetterCam implements IXposedHookLoadPackage {
 							param.setResult(true);
 						}
 					});
+
+			findAndHookMethod("com.sonyericsson.cameracommon.viewfinder.indicators.GeotagIndicator",
+					lpparam.classLoader, "getAcquiredGpsIcon", new XC_MethodHook() {
+						@Override
+						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							final LocationManager locationManager = (LocationManager) mActivity
+									.getSystemService(Context.LOCATION_SERVICE);
+							Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+							if (location != null) {
+								Logger.debug(
+										"XBetterCam: timeDifference = " + (new Date().getTime() - location.getTime()));
+							}
+						}
+					});
+
+			findAndHookMethod("com.sonyericsson.cameracommon.mediasaving.location.GeotagManager", lpparam.classLoader,
+					"isGpsAcquired", new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+							Logger.debug("XBetterCam: isGpsAcquired");
+							mGpsAcquired = (Boolean) param.getResult();
+						}
+					});
+
 		} else if (lpparam.packageName.equals(APP_PACKAGE_AR_EFFECT)) {
 
 			hookOnResumeAndExitMethods(lpparam);
@@ -97,7 +156,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
-							XposedBridge.log("XBetterCam: Hooking Method launchAlbum in MainUi of AR Effect addon...");
+							Logger.debug("XBetterCam: Hooking Method launchAlbum in MainUi of AR Effect addon...");
 
 							final Uri uri = (Uri) param.args[0];
 							Activity activity = (Activity) callMethod(param.thisObject, "getActivity");
@@ -120,7 +179,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
-							XposedBridge.log(
+							Logger.debug(
 									"XBetterCam: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
 							final Intent intent = (Intent) param.args[0];
 
@@ -152,7 +211,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 						prefs.reload();
 						if (!prefs.getBoolean("capture_mode_preference", false))
 							return;
-						XposedBridge.log("XBetterCam: hooking getLastCapturingMode()");
+						Logger.debug("XBetterCam: hooking getLastCapturingMode()");
 						if (param.getResult().equals(enumVideo)) {
 							param.setResult(enumPhoto);
 						}
@@ -169,14 +228,16 @@ public class XBetterCam implements IXposedHookLoadPackage {
 
 	private void hookOnResume(final LoadPackageParam lpparam) {
 		findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new XC_MethodHook() {
+
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				XposedBridge.log("XBetterCam: Entering Activity.performResume()...");
+				Logger.debug("XBetterCam: Entering Activity.performResume()...");
 				prefs.reload();
 				if (prefs.getBoolean("system_location_preference", false)) {
 					final Activity activity = (Activity) param.thisObject;
+					mActivity = (Activity) param.thisObject;
 					if (!locationHandler.applyLocationSettings(activity))
-						XposedBridge.log("XBetterCam: turnGpsOn() returned false");
+						Logger.debug("XBetterCam: turnGpsOn() returned false");
 				}
 			}
 		});
@@ -189,7 +250,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 				if (!prefs.getBoolean("system_location_preference", false))
 					return;
 
-				XposedBridge.log("XBetterCam: Entering Activity." + methodName + "()...");
+				Logger.debug("XBetterCam: Entering Activity." + methodName + "()...");
 				final Activity activity = (Activity) param.thisObject;
 				locationHandler.restoreLocationSettings(activity);
 			}
@@ -202,7 +263,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		intent.putExtra("android.intent.extra.finishOnCompletion", true);
 		intent.setDataAndType(uri, MimeType.PHOTO.getText());
 		if (intent.resolveActivity(activity.getPackageManager()) != null) {
-			XposedBridge.log("XBetterCam: Starting user gallery...");
+			Logger.debug("XBetterCam: Starting user gallery...");
 			activity.startActivity(intent);
 			param.setResult(null);
 		}
@@ -211,7 +272,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 	@SuppressLint("DefaultLocale")
 	private boolean needsSonyGallery(final Activity activity, final Uri uri, final String s, final boolean b) {
 		final String realPath = getRealPathFromURI(activity, uri);
-		XposedBridge.log("XBetterCam: Path to medium: " + realPath);
+		Logger.debug("XBetterCam: Path to medium: " + realPath);
 
 		boolean mpoPresent = false;
 
@@ -221,7 +282,7 @@ public class XBetterCam implements IXposedHookLoadPackage {
 		}
 
 		if (MimeType.fromText(s) == MimeType.MPO || b || realPath.contains(TIMESHIFT_IDENT) || mpoPresent) {
-			XposedBridge.log("XBetterCam: Fallback to original method");
+			Logger.debug("XBetterCam: Fallback to original method");
 			return true;
 		}
 		return false;
