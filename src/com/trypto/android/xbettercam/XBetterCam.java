@@ -7,7 +7,6 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 
 import java.io.File;
-import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,8 +16,6 @@ import android.content.res.XModuleResources;
 import android.content.res.XResources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -35,7 +32,6 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 	private static final String PACKAGE_NAME = XBetterCam.class.getPackage().getName();
 	private final XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
 	private final SystemLocationHandler locationHandler = new SystemLocationHandler(prefs);
-	private Activity mActivity;
 	private static String MODULE_PATH = null;
 	private boolean mGpsAcquired = false;
 
@@ -118,20 +114,6 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 							if (!prefs.getBoolean("geotag_preference", true))
 								return;
 							param.setResult(true);
-						}
-					});
-
-			findAndHookMethod("com.sonyericsson.cameracommon.viewfinder.indicators.GeotagIndicator",
-					lpparam.classLoader, "getAcquiredGpsIcon", new XC_MethodHook() {
-						@Override
-						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							final LocationManager locationManager = (LocationManager) mActivity
-									.getSystemService(Context.LOCATION_SERVICE);
-							Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								Logger.debug(
-										"XBetterCam: timeDifference = " + (new Date().getTime() - location.getTime()));
-							}
 						}
 					});
 
@@ -235,7 +217,6 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 				prefs.reload();
 				if (prefs.getBoolean("system_location_preference", false)) {
 					final Activity activity = (Activity) param.thisObject;
-					mActivity = (Activity) param.thisObject;
 					if (!locationHandler.applyLocationSettings(activity))
 						Logger.debug("XBetterCam: turnGpsOn() returned false");
 				}
