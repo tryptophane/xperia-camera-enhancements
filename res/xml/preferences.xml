@@ -16,7 +16,7 @@
 	</PreferenceCategory>
 
     <PreferenceCategory
-            android:title="@string/category_preferences">
+            android:title="@string/category_misc_preferences">
 
         <CheckBoxPreference
                 android:key="launcher_preference"
@@ -24,6 +24,17 @@
                 android:summary="@string/summary_launcher_preference"
                 android:defaultValue="true" />
 
+		<CheckBoxPreference
+                android:key="capture_mode_preference"
+                android:title="@string/title_capture_mode_preference"
+                android:summary="@string/summary_capture_mode_preference"
+				android:defaultValue="false" />
+
+	</PreferenceCategory>
+	
+	<PreferenceCategory
+            android:title="@string/category_location_preferences">
+	
         <CheckBoxPreference
                 android:key="geotag_preference"
                 android:title="@string/title_geotag_preference"
@@ -50,11 +61,11 @@
 				android:defaultValue="false" />
 				
         <CheckBoxPreference
-                android:key="capture_mode_preference"
-                android:title="@string/title_capture_mode_preference"
-                android:summary="@string/summary_capture_mode_preference"
-				android:defaultValue="false" />
-
-    </PreferenceCategory>
+                android:key="mod_icon_preference"
+                android:title="@string/title_mod_icon_preference"
+                android:summary="@string/summary_mod_icon_preference"
+				android:defaultValue="true" />
+				
+     </PreferenceCategory>
 
  </PreferenceScreen>
