@@ -42,7 +42,10 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
 	@Override
 	public void handleInitPackageResources(final InitPackageResourcesParam resparam) throws Throwable {
-		if (!resparam.packageName.equals(APP_PACKAGE_CAMERA)) {
+		if (!(resparam.packageName.equals(APP_PACKAGE_CAMERA) || resparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
+				|| resparam.packageName.equals(APP_PACKAGE_ART_CAMERA)
+				|| resparam.packageName.equals(APP_PACKAGE_SOUND_PHOTO)
+				|| resparam.packageName.equals(APP_PACKAGE_TIMESHIFT))) {
 			return;
 		}
 		final XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
