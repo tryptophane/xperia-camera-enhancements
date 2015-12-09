@@ -26,18 +26,27 @@ In other camera modes, the camera will possibly still always use the Album app.
 
 If it does not work and you do not get asked which app to use, try to clear the defaults of the gallery app that gets opened by default!
 
-<b>MOD #2: Keep Geo-Tags setting ON</b>
+<b>MOD #2: Force photo mode on start</b>
+In manual mode, the camera will always start in photo mode, even if the last mode used was video.
+
+<b>MOD #3: Keep Geo-Tags setting ON</b>
 
 This mod prevents a very annoying behavior of the stock camera app. Whenever you switch the camera to another mode than superior auto or manual, it will set the Geo-Tags setting to OFF, if GPS has been disallowed in the system-wide android settings. It will stay OFF in all camera modes until you set it to ON manually again, even if GPS has been allowed again in the system settings. The result of this behavior is that most of the pictures I made with my phone lack the location tag, although I never disabled the geo tags intentionally in the camera settings.
 
 This mod prevents this behavior, the Geo-Tags setting will stay set to ON until you deliberately disable it.
 
-<b>MOD #3: Enable location setting in system on start</b>
-This will enable the location setting in the android system on camera start/resume. It will disable it again on close/hide, but only if it has been enabled by this mod, not if location was already enabled before starting the camera.
+<b>MOD #4: Enable location setting in system on start</b>
+This will enable the location setting in the android system on camera start/resume.
 
-<b>MOD #4: Force photo mode on start</b>
+<b>MOD #5: Choose location mode setting</b>
+This mod enables to choose the mode for acquiring location to be set in system. It can be either GPS, networks or both.
+This Xposed module will never disable a mode that was activated prior to camera start! E.g., if before camera start location was enabled in system and set to GPS, and you choose to enable location based on networks in this module, it will set the location mode to GPS and networks on camera start.
 
-In manual mode, the camera will always start in photo mode, even if the last mode used was video.
+<b>MOD #6: Restore location setting in system on exit</b>
+When exiting the camera, this mod will restore the location settings in system to their state before camera start.
+
+<b>MOD #7: Mod geo-tag icon</b>
+Show a blue geo-tag icon when location is fixed by networks and a white one for GPS-fix.
 
 <b>Credits:</b>
 

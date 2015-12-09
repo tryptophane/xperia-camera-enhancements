@@ -3,29 +3,29 @@
     <string name="category_support">Support</string>
     <string name="category_misc_preferences">Misc preferences</string>
     <string name="category_location_preferences">Location related preferences</string>
- 
+
     <string name="app_name">Xperia Camera Enhancements</string>
     <string name="support_preference">Xperia Camera Enhancements</string>
     <string name="support_text">Copyright © 2015 – Pascal Pollet\nTap here to open XDA support thread</string>
 
     <string name="title_launcher_preference">Unbind default gallery app</string>
     <string name="summary_launcher_preference">Choose which gallery app to use when tapping on the preview thumbnail</string>
- 
+
     <string name="title_capture_mode_preference">Force photo mode on start</string>
     <string name="summary_capture_mode_preference">Always start camera in photo mode even if the last mode used was video.</string>
- 
+
     <string name="title_geotag_preference">Keep Geo-Tag setting</string>
     <string name="summary_geotag_preference">Ensures that the Geo-Tags option does not get disabled automatically</string>
- 
+
     <string name="title_system_location_preference">Enable location on start</string>
     <string name="summary_system_location_preference">Enable location in android system on start</string>
- 
+
     <string name="title_location_mode_preference">Location mode</string>
- 
+
     <string name="title_disable_system_location_preference">Restore location on exit</string>
-    <string name="summary_disable_system_location_preference">On exit, this will restore location settings like they were before start</string>
- 
+    <string name="summary_disable_system_location_preference">On exit, this will restore system location settings to their state before start</string>
+
     <string name="title_mod_icon_preference">Mod geo-tag icon</string>
     <string name="summary_mod_icon_preference">Show a blue geo-tag icon when location is fixed by networks and a white one for GPS-fix</string>
- 
+
 </resources>
