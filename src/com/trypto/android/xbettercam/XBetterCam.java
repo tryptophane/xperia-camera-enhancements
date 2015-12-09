@@ -49,15 +49,16 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 			return;
 		}
 		final XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
+		final int idOriginalIcon = resparam.res.getIdentifier("cam_acquired_gps_icn", "drawable", resparam.packageName);
 
 		resparam.res.setReplacement(resparam.packageName, "drawable", "cam_acquired_gps_icn",
 				new XResources.DrawableLoader() {
 					@Override
 					public Drawable newDrawable(XResources res, int id) throws Throwable {
-						if (!mGpsAcquired) {
+						if (!mGpsAcquired && prefs.getBoolean("mod_icon_preference", true)) {
 							return modRes.getDrawable(R.drawable.cam_acquired_gps_icn_blue, null);
 						}
-						return modRes.getDrawable(R.drawable.cam_acquired_gps_icn, null);
+						return res.getDrawable(idOriginalIcon);
 					}
 				});
 	}
