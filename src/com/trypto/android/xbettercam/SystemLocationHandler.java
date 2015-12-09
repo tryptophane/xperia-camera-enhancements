@@ -9,8 +9,7 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.provider.Settings;
 import de.robv.android.xposed.XSharedPreferences;
-
-// TODO mod com.sonyericsson.cameracommon.viewfinder.indicators.GeotagIndicator
+import de.robv.android.xposed.XposedBridge;
 
 public class SystemLocationHandler {
 	private int beforeEnable = LOCATION_MODE_OFF;
@@ -24,7 +23,6 @@ public class SystemLocationHandler {
 	public boolean applyLocationSettings(Context context) {
 		try {
 			String locationModePref = prefs.getString("location_mode_preference", null);
-			Logger.debug("XBetterCam: locationModePref: " + locationModePref);
 
 			if (locationModePref == null) {
 				return false;
@@ -51,7 +49,7 @@ public class SystemLocationHandler {
 
 			Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, newLocationMode);
 		} catch (Exception e) {
-			Logger.debug(e.getMessage());
+			XposedBridge.log(e);
 			return false;
 		}
 		return isSystemLocationEnabled(context);
@@ -66,7 +64,7 @@ public class SystemLocationHandler {
 		try {
 			Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, beforeEnable);
 		} catch (Exception e) {
-			Logger.debug(e.getMessage());
+			XposedBridge.log(e);
 		}
 	}
 

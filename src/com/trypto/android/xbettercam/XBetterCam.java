@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -105,7 +106,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 								return;
 							}
 
-							Logger.debug("XBetterCam: Starting user gallery...");
+							Log.d("XBetterCam", "Starting user gallery...");
 							callStaticMethod(AlbumLauncher, "launchPlayer", activity, uri, s);
 							param.setResult(null);
 						}
@@ -125,7 +126,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 					"isGpsAcquired", new XC_MethodHook() {
 						@Override
 						protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-							Logger.debug("XBetterCam: isGpsAcquired");
+							Log.d("XBetterCam", "Hooking isGpsAcquired()");
 							mGpsAcquired = (Boolean) param.getResult();
 						}
 					});
@@ -142,7 +143,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
-							Logger.debug("XBetterCam: Hooking Method launchAlbum in MainUi of AR Effect addon...");
+							Log.d("XBetterCam", "Hooking launchAlbum() in MainUi of AR Effect addon...");
 
 							final Uri uri = (Uri) param.args[0];
 							Activity activity = (Activity) callMethod(param.thisObject, "getActivity");
@@ -165,8 +166,8 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 							if (!prefs.getBoolean("launcher_preference", true))
 								return;
 
-							Logger.debug(
-									"XBetterCam: Hooking Method startActivityForResult in superclass Activity from ViewFinderActivity of Background Defocus addon...");
+							Log.d("XBetterCam",
+									"Hooking startActivityForResult() in superclass Activity from ViewFinderActivity of Background Defocus addon...");
 							final Intent intent = (Intent) param.args[0];
 
 							if (intent.getAction().equals("android.intent.action.VIEW")
@@ -197,7 +198,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 						prefs.reload();
 						if (!prefs.getBoolean("capture_mode_preference", false))
 							return;
-						Logger.debug("XBetterCam: hooking getLastCapturingMode()");
+						Log.d("XBetterCam", "Hooking getLastCapturingMode()");
 						if (param.getResult().equals(enumVideo)) {
 							param.setResult(enumPhoto);
 						}
@@ -215,12 +216,12 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				Logger.debug("XBetterCam: Entering Activity.performResume()...");
+				Log.d("XBetterCam", "Entering Activity.performResume()...");
 				prefs.reload();
 				if (prefs.getBoolean("system_location_preference", false)) {
 					final Activity activity = (Activity) param.thisObject;
 					if (!locationHandler.applyLocationSettings(activity))
-						Logger.debug("XBetterCam: turnGpsOn() returned false");
+						Log.d("XBetterCam", "turnGpsOn() returned false");
 				}
 			}
 		});
@@ -233,7 +234,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 				if (!prefs.getBoolean("system_location_preference", false))
 					return;
 
-				Logger.debug("XBetterCam: Entering Activity." + methodName + "()...");
+				Log.d("XBetterCam", "Entering Activity." + methodName + "()...");
 				final Activity activity = (Activity) param.thisObject;
 				locationHandler.restoreLocationSettings(activity);
 			}
@@ -246,7 +247,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 		intent.putExtra("android.intent.extra.finishOnCompletion", true);
 		intent.setDataAndType(uri, MimeType.PHOTO.getText());
 		if (intent.resolveActivity(activity.getPackageManager()) != null) {
-			Logger.debug("XBetterCam: Starting user gallery...");
+			Log.d("XBetterCam", "Starting user gallery...");
 			activity.startActivity(intent);
 			param.setResult(null);
 		}
@@ -255,7 +256,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 	@SuppressLint("DefaultLocale")
 	private boolean needsSonyGallery(final Activity activity, final Uri uri, final String s, final boolean b) {
 		final String realPath = getRealPathFromURI(activity, uri);
-		Logger.debug("XBetterCam: Path to medium: " + realPath);
+		Log.d("XBetterCam", "Path to medium: " + realPath);
 
 		boolean mpoPresent = false;
 
@@ -265,7 +266,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 		}
 
 		if (MimeType.fromText(s) == MimeType.MPO || b || realPath.contains(TIMESHIFT_IDENT) || mpoPresent) {
-			Logger.debug("XBetterCam: Fallback to original method");
+			Log.d("XBetterCam", "Fallback to original method");
 			return true;
 		}
 		return false;
