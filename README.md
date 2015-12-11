@@ -36,14 +36,16 @@ This mod prevents a very annoying behavior of the stock camera app. Whenever you
 This mod prevents this behavior, the Geo-Tags setting will stay set to ON until you deliberately disable it.
 
 <b>MOD #4: Enable location setting in system on start</b>
-This will enable the location setting in the android system on camera start/resume.
+This will enable location in the android system settings on camera start/resume, to make sure that geo tags can always get recorded (see also MOD #6 to restore the previous location settings on camera exit.
+
+This mod applies only to the camera modes "superior auto" and "manual". When starting other modes, the location setting will stay untouched. In combination with MOD #6, this means: if GPS gets activated by starting one of this 2 modes and MOD #6 is activated, switching to another mode will deactivate GPS again. To record geo-tags in the other modes, you will still have to activate GPS manually in the system settings if MOD #6 is activated.This restriction is due to technical limitations due to the fact that each camera mode is an independent app, and these apps cannot communicate without any time lag. But this would be necessary to make this mod work reliably across different modes.
 
 <b>MOD #5: Choose location mode setting</b>
 This mod enables to choose the mode for acquiring location to be set in system. It can be either GPS, networks or both.
 This Xposed module will never disable a mode that was activated prior to camera start! E.g., if before camera start location was enabled in system and set to GPS, and you choose to enable location based on networks in this module, it will set the location mode to GPS and networks on camera start.
 
 <b>MOD #6: Restore location setting in system on exit</b>
-When exiting the camera, this mod will restore the location settings in system to their state before camera start.
+When exiting the camera, this mod will restore the location settings in system to their state before camera start. It applies only to the modes "superior auto" and "manual".
 
 <b>MOD #7: Mod geo-tag icon</b>
 Show a blue geo-tag icon when location is fixed by networks and a white one for GPS-fix.

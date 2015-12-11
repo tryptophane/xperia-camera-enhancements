@@ -19,12 +19,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import de.robv.android.xposed.IXposedHookInitPackageResources;
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.*;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -218,10 +214,9 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				Log.d("XBetterCam", "Entering Activity.performResume()...");
 				prefs.reload();
-				if (prefs.getBoolean("system_location_preference", false)) {
-					final Activity activity = (Activity) param.thisObject;
-					if (!locationHandler.applyLocationSettings(activity))
-						Log.d("XBetterCam", "turnGpsOn() returned false");
+				if (prefs.getBoolean("system_location_preference", false)
+						&& lpparam.packageName.equals(APP_PACKAGE_CAMERA)) {
+					locationHandler.applyLocationSettings((Activity) param.thisObject);
 				}
 			}
 		});
@@ -235,8 +230,9 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 					return;
 
 				Log.d("XBetterCam", "Entering Activity." + methodName + "()...");
-				final Activity activity = (Activity) param.thisObject;
-				locationHandler.restoreLocationSettings(activity);
+				if (lpparam.packageName.equals(APP_PACKAGE_CAMERA)) {
+					locationHandler.restoreLocationSettings((Activity) param.thisObject);
+				}
 			}
 		});
 	}

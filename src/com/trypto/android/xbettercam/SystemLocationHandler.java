@@ -26,12 +26,12 @@ public class SystemLocationHandler {
 	}
 
 	@SuppressWarnings("deprecation")
-	public boolean applyLocationSettings(Context context) {
+	public void applyLocationSettings(Context context) {
 		try {
 			String locationModePref = prefs.getString("location_mode_preference", null);
 
 			if (locationModePref == null) {
-				return false;
+				return;
 			}
 
 			int savedMode = -1;
@@ -61,15 +61,14 @@ public class SystemLocationHandler {
 			} else if (locationModePref.equals("2")) {
 				newLocationMode = LOCATION_MODE_HIGH_ACCURACY;
 			} else {
-				return false;
+				return;
 			}
 
 			Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, newLocationMode);
 		} catch (Exception e) {
 			XposedBridge.log(e);
-			return false;
+			return;
 		}
-		return isSystemLocationEnabled(context);
 	}
 
 	@SuppressWarnings("deprecation")
