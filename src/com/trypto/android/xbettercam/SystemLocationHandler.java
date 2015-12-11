@@ -5,12 +5,17 @@ import static android.provider.Settings.Secure.LOCATION_MODE_HIGH_ACCURACY;
 import static android.provider.Settings.Secure.LOCATION_MODE_OFF;
 import static android.provider.Settings.Secure.LOCATION_MODE_SENSORS_ONLY;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.LocationManager;
 import android.provider.Settings;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
+@SuppressLint({ "WorldReadableFiles", "WorldWriteableFiles" })
 public class SystemLocationHandler {
 	private int beforeEnable = LOCATION_MODE_OFF;
 
@@ -20,6 +25,7 @@ public class SystemLocationHandler {
 		this.prefs = prefs;
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean applyLocationSettings(Context context) {
 		try {
 			String locationModePref = prefs.getString("location_mode_preference", null);
@@ -28,7 +34,18 @@ public class SystemLocationHandler {
 				return false;
 			}
 
-			beforeEnable = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+			int savedMode = -1;
+			SharedPreferences pref = context.getSharedPreferences("last_location_mode.txt",
+					Activity.MODE_WORLD_READABLE);
+			if (System.currentTimeMillis() - pref.getLong("time", 0) < 2000) {
+				savedMode = pref.getInt("mode", -1);
+			}
+
+			if (savedMode != -1) {
+				beforeEnable = savedMode;
+			} else {
+				beforeEnable = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+			}
 			int newLocationMode;
 
 			// makes sure that GPS- or network-location never gets turned OFF
@@ -55,6 +72,7 @@ public class SystemLocationHandler {
 		return isSystemLocationEnabled(context);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void restoreLocationSettings(Context context) {
 		if (!prefs.getBoolean("system_location_preference", false)
 				|| !prefs.getBoolean("disable_system_location_preference", true)) {
@@ -62,6 +80,11 @@ public class SystemLocationHandler {
 		}
 
 		try {
+			Editor editor = context.getSharedPreferences("last_location_mode.txt", Activity.MODE_WORLD_WRITEABLE)
+					.edit();
+			editor.putLong("time", System.currentTimeMillis());
+			editor.putInt("mode", beforeEnable);
+			editor.apply();
 			Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, beforeEnable);
 		} catch (Exception e) {
 			XposedBridge.log(e);
