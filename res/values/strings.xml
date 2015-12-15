@@ -14,6 +14,9 @@
     <string name="title_capture_mode_preference">Force photo mode on start</string>
     <string name="summary_capture_mode_preference">Always start camera in photo mode even if the last mode used was video.</string>
 
+    <string name="title_always_manual_preference">Force manual mode on start</string>
+    <string name="summary_always_manual_preference">Applies when started from menu, shortcut or history, not from camera button or lock screen.</string>
+
     <string name="title_geotag_preference">Keep Geo-Tag setting</string>
     <string name="summary_geotag_preference">Ensures that the Geo-Tags option does not get disabled automatically</string>
 

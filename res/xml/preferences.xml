@@ -30,6 +30,12 @@
                 android:summary="@string/summary_capture_mode_preference"
 				android:defaultValue="false" />
 
+		<CheckBoxPreference
+                android:key="always_manual_preference"
+                android:title="@string/title_always_manual_preference"
+                android:summary="@string/summary_always_manual_preference"
+				android:defaultValue="false" />
+
 	</PreferenceCategory>
 	
 	<PreferenceCategory

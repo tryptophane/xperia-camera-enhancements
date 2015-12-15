@@ -15,6 +15,9 @@ public class Constants {
 	public static final String PATH_ANDROID_APP_ACTIVITY = "android.app.Activity";
 	public static final String PATH_LOCATION_SETTINGS_READER = "com.sonyericsson.cameracommon.mediasaving.location.LocationSettingsReader";
 	public static final String PATH_CAPTURING_MODE = "com.sonyericsson.android.camera.configuration.parameters.CapturingMode";
+	public static final String PATH_LAUNCH_CONDITIONS = "com.sonyericsson.android.camera.LaunchConditions";
+	public static final String PATH_FAST_CAPTURING_ACTIVITY = "com.sonyericsson.android.camera.fastcapturing.FastCapturingActivity";
+	public static final String PATH_STATE_MACHINE = "com.sonyericsson.android.camera.fastcapturing.StateMachine";
 
 	public static final String TIMESHIFT_IDENT = "DCIM/XPERIA/TIMESHIFT";
 }

@@ -28,7 +28,7 @@ public class SystemLocationHandler {
 	@SuppressWarnings("deprecation")
 	public void applyLocationSettings(Context context) {
 		try {
-			String locationModePref = prefs.getString("location_mode_preference", null);
+			String locationModePref = prefs.getString("location_mode_preference", "0");
 
 			if (locationModePref == null) {
 				return;
