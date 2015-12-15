@@ -29,8 +29,8 @@ If it does not work and you do not get asked which app to use, try to clear the 
 <b>MOD #2: Force photo mode on start</b>
 In manual mode, the camera will always start in photo mode, even if the last mode used was video.
 
-<b>MOD #3: Force auto mode on start</b>
-The camera will always start in "Auto" mode, when startes from menu, shortcut or history. This mod does not apply when the camera is started from the camera button or lockscreen. In this case, the default "Superior Auto" mode will be started.
+<b>MOD #3: Force manual mode on start</b>
+The camera will always start in manual mode, when startes from menu, shortcut or history. This mod does not apply when the camera is started from the camera button or lockscreen. In this case, the default "Superior Auto" mode will be started.
 
 <b>MOD #4: Keep Geo-Tags setting ON</b>
 
