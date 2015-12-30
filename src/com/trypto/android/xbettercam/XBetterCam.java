@@ -7,9 +7,12 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.XModuleResources;
@@ -78,6 +81,10 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 			final Enum<?> enumPhoto = Enum.valueOf(CapturingMode, "PHOTO");
 
 			modLastCapturingMode(lpparam, CapturingMode, enumNormal, enumVideo, enumPhoto);
+		}
+
+		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_ART_CAMERA)) {
+			modFileName(lpparam);
 		}
 
 		if (lpparam.packageName.equals(APP_PACKAGE_CAMERA) || lpparam.packageName.equals(APP_PACKAGE_CAMERA_3D)
@@ -187,6 +194,38 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
 	}
 
+	private void modFileName(final LoadPackageParam lpparam) {
+		findAndHookMethod(PATH_DCF_PATH_BUILDER, lpparam.classLoader, "assignImageFilePath", int.class,
+				ContentResolver.class, new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+						if (!prefs.getBoolean("filename_preference", true)) {
+							return;
+						}
+						Log.d("XBetterCam", "modding filename");
+						final SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS");
+						final String date = df.format(new Date());
+						int n = (int) param.args[0];
+						String s2 = null;
+						switch (n) {
+						case 0: {
+							s2 = "DSC_";
+							break;
+						}
+						case 1: {
+							s2 = "MOV_";
+							break;
+						}
+						default: {
+							s2 = "";
+						}
+						}
+						final String fileNameOri = (String) param.getResult();
+						param.setResult(fileNameOri.substring(0, fileNameOri.lastIndexOf("/") + 1) + s2 + date);
+					}
+				});
+	}
+
 	@SuppressWarnings("rawtypes")
 	private void modLastCapturingMode(final LoadPackageParam lpparam, final Class<? extends Enum> CapturingMode,
 			final Enum<?> enumNormal, final Enum<?> enumVideo, Enum<?> enumPhoto) {
@@ -218,7 +257,7 @@ public class XBetterCam implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				Log.d("XBetterCam", "Entering Activity.performResume()...");
+				Log.d("XBetterCam", "Entering Activity.onResume()...");
 				prefs.reload();
 				if (prefs.getBoolean("system_location_preference", false)
 						&& lpparam.packageName.equals(APP_PACKAGE_CAMERA)) {

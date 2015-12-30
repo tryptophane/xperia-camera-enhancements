@@ -24,6 +24,12 @@
                 android:summary="@string/summary_launcher_preference"
                 android:defaultValue="true" />
 
+        <CheckBoxPreference
+                android:key="filename_preference"
+                android:title="@string/title_filename_preference"
+                android:summary="@string/summary_filename_preference"
+                android:defaultValue="true" />
+
 		<CheckBoxPreference
                 android:key="capture_mode_preference"
                 android:title="@string/title_capture_mode_preference"

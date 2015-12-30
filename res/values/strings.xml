@@ -11,6 +11,9 @@
     <string name="title_launcher_preference">Unbind default gallery app</string>
     <string name="summary_launcher_preference">Choose which gallery app to use when tapping on the preview thumbnail</string>
 
+    <string name="title_filename_preference">Use date-time naming-scheme</string>
+    <string name="summary_filename_preference">example filename: DSC_20151230_133825_423.JPG</string>
+
     <string name="title_capture_mode_preference">Force photo mode on start</string>
     <string name="summary_capture_mode_preference">Always start camera in photo mode even if the last mode used was video.</string>
 
